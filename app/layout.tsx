@@ -6,6 +6,8 @@ import LoginModal from './components/modals/LoginModal'
 import SupabaseProvider from './providers/SupabaseProvider'
 import { createServerComponentSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { headers, cookies } from 'next/headers'
+import ToastContext from './context/ToastContext'
+import RegisterModal from './components/modals/RegisterModal'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,8 +35,10 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SupabaseProvider session={session}>
           <ColorProvider>
+            <ToastContext />
             <LoginModal />
-            <Navbar />
+            <RegisterModal />
+            <Navbar session={session}/>
             {children}
           </ColorProvider>
         </SupabaseProvider>

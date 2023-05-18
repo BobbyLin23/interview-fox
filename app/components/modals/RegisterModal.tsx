@@ -1,18 +1,33 @@
 'use client'
 
-import useLoginModal from '@/app/hooks/useLoginModal'
+import useRegisterModal from '@/app/hooks/useRegisterModal'
 import Modal from '../common/Modal'
+import useLoginModal from '@/app/hooks/useLoginModal'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import Input from '../common/Input'
 import Button from '../common/Button'
-import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import { useSupabase } from '@/app/providers/SupabaseProvider'
 import { toast } from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
-import useRegisterModal from '@/app/hooks/useRegisterModal'
 
-const LoginModal = () => {
+const RegisterModal = () => {
   const loginModal = useLoginModal()
   const registerModal = useRegisterModal()
+
+  const { supabase } = useSupabase()
+  const router = useRouter()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FieldValues>({
+    defaultValues: {
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  })
 
   const toggleAuth = () => {
     if (loginModal.isOpen) {
@@ -24,24 +39,13 @@ const LoginModal = () => {
     }
   }
 
-  const { supabase } = useSupabase()
-
-  const router = useRouter()
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FieldValues>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  })
-
   const onSubmit: SubmitHandler<FieldValues> = async (value) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      if (value.password !== value.confirmPassword) {
+        toast.error('Passwords do not match')
+        return 
+      }
+      const {data, error} = await supabase.auth.signUp({
         email: value.email,
         password: value.password,
       })
@@ -50,12 +54,12 @@ const LoginModal = () => {
         throw error
       }
       if (data.session) {
-        toast.success('Logged in successfully')
+        toast.success('Sign Up successfully')
         router.push('/dashboard')
       }
-      loginModal.onClose()
+      registerModal.onClose()
     } catch (e) {
-      console.error(e, 'SIGN_IN_ERROR')
+      console.error(e, 'SIGN_UP_ERROR')
     }
   }
 
@@ -72,31 +76,45 @@ const LoginModal = () => {
         id="password"
         label="Password"
         type="password"
-        register={register}
         errors={errors}
+        register={register}
+      />
+      <Input
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        errors={errors}
+        register={register}
       />
       <Button type="submit" varient="primary">
-        Login
+        Sign Up
       </Button>
     </form>
   )
 
-  const footerContent = <div className="space-y-4">
-    <div className='flex items-center justify-between text-sky-900'>
-      <div>Forget Password</div>
-      <div className='cursor-pointer hover:underline' onClick={toggleAuth}>Sign Up</div>
+  const footerContent = (
+    <div className="flex items-center justify-center">
+      <div className="text-gray-500">
+        Have an account?{' '}
+        <span
+          className="cursor-pointer text-sky-900 hover:underline"
+          onClick={toggleAuth}
+        >
+          Sign In
+        </span>
+      </div>
     </div>
-  </div>
+  )
 
   return (
     <Modal
-      isOpen={loginModal.isOpen}
-      onClose={loginModal.onClose}
-      title="Login"
+      isOpen={registerModal.isOpen}
+      onClose={registerModal.onClose}
+      title="Sign Up"
       body={bodyContent}
       footer={footerContent}
     />
   )
 }
 
-export default LoginModal
+export default RegisterModal
