@@ -1,9 +1,12 @@
-import { useSupabase } from '../providers/SupabaseProvider'
+import { createServerComponentSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { headers, cookies } from 'next/headers'
 
 export default async function getCurrentUser() {
   try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { supabase } = useSupabase()
+    const supabase = createServerComponentSupabaseClient({
+      headers,
+      cookies,
+    })
 
     const {
       data: { session },
@@ -16,11 +19,12 @@ export default async function getCurrentUser() {
     const currentUser = await supabase
       .from('Profile')
       .select('*')
-      .eq('id', session.user.id)
 
     if (!currentUser.data) {
       return null
     }
+
+    console.log(currentUser)
 
     return currentUser
   } catch (e) {

@@ -18,11 +18,11 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
   const loginModal = useLoginModal()
   const router = useRouter()
 
-  const {supabase} = useSupabase()
+  const { supabase } = useSupabase()
 
   const logOut = async () => {
-    const {error} = await supabase.auth.signOut()
-    if (error) {  
+    const { error } = await supabase.auth.signOut()
+    if (error) {
       toast.error('Failed to log out')
     } else {
       toast.success('Sign Out Successfully')
@@ -30,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
   }
 
   return (
-    <header className="flex w-full items-center justify-between px-2 py-4 shadow-md dark:shadow-gray-700 md:px-4 lg:px-6 xl:px-10">
+    <header className="flex w-full h-[68px] items-center justify-between px-2 py-4 shadow-md dark:shadow-gray-700 md:px-4 lg:px-6 xl:px-10">
       <span
         className="cursor-pointer text-lg font-semibold hover:text-neutral-500"
         onClick={() => router.push('/')}

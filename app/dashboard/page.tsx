@@ -14,6 +14,9 @@ export default async function Dashboard() {
   }
 
   return (
-    <div>{session.user.email}</div>
+    <div className="h-full w-full overflow-y-auto px-6 py-6">
+      <h1 className="my-2 text-2xl font-bold">Dashboard</h1>
+      {session.user.email}
+    </div>
   )
 }

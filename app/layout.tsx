@@ -39,7 +39,9 @@ export default async function RootLayout({
             <LoginModal />
             <RegisterModal />
             <Navbar session={session}/>
-            {children}
+            <div className='w-full h-[calc(100vh-68px)]'>
+              {children}
+            </div>
           </ColorProvider>
         </SupabaseProvider>
       </body>
